@@ -136,9 +136,6 @@ public class BrakeFuzzy {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        String brakeSection = brakeSection(0.3f);
-        System.out.println(brakeSection);
-
         while (true) {
             // 상대 속도 입력 값
             System.out.print("상대 속도를 입력해 주세요. (-100km/h ~ 100km/h) : ");
