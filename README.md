@@ -5,5 +5,5 @@ Author = {
 "박결" : "gyul611@gmail.com",  
 "허지영" : "jiyoungmerong@gmail.com",  
 "👾승헌" : "seungheon328@gmail.com",
-"강준혁" : "kangjun5023@gmail.com"
+"강준혁"  : "kangjun5023@gmail.com"
 }
