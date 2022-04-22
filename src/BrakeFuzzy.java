@@ -1,137 +1,111 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.SerializablePermission;
+import java.util.ArrayList;
 
 public class BrakeFuzzy {
-    public static String speedSection(float speed) {
-        String result = "";
+    public static void rule(ArrayList<String> speed, ArrayList<String> distance) {
+        ArrayList<String> result = new ArrayList<>();
+        ArrayList<Float> inputResult = new ArrayList<>();
+        for (int i = 0; i < speed.size(); i++) {
+            for (int j = 0; j < distance.size(); j++) {
 
-        if (speed < -60) {
-            result += 1 + " 느림(속도)\n";
+                float speedSize = Float.parseFloat(speed.get(i).split(" ")[0]);
+                float distanceSize = Float.parseFloat(distance.get(j).split(" ")[0]);
+
+                float maxResult = Math.max(speedSize, distanceSize);
+                float minResult = Math.min(speedSize, distanceSize);
+
+                String speedSection = speed.get(i).split(" ")[1];
+                String distanceSection = distance.get(j).split(" ")[1];
+                String brakeSection = "";
+
+                if (speedSection.equals("느림(속도)") || distanceSection.equals("가까움(거리)")) {
+                    inputResult.add(maxResult);
+                    brakeSection = "빡";
+                    Brake brake = new Brake(maxResult, brakeSection);
+
+                    result.add(brake.getOutPut());
+                }
+
+                if (speedSection.equals("느림(속도)") && distanceSection.equals("적당함(거리)")) {
+                    inputResult.add(minResult);
+                    brakeSection = "세게";
+                    Brake brake = new Brake(minResult, brakeSection);
+
+                    result.add(brake.getOutPut());
+                }
+
+                if (speedSection.equals("느림(속도)") && distanceSection.equals("멀다(거리)")) {
+                    inputResult.add(minResult);
+                    brakeSection = "살살";
+                    Brake brake = new Brake(minResult, brakeSection);
+
+                    result.add(brake.getOutPut());
+                }
+
+                if (speedSection.equals("적당함(속도)") && distanceSection.equals("가까움(거리)")) {
+                    inputResult.add(minResult);
+                    brakeSection = "세게";
+                    Brake brake = new Brake(minResult, brakeSection);
+
+                    result.add(brake.getOutPut());
+                }
+
+                if (speedSection.equals("적당함(속도)") && distanceSection.equals("적당함(거리)")) {
+                    inputResult.add(minResult);
+                    brakeSection = "살살";
+                    Brake brake = new Brake(minResult, brakeSection);
+
+                    result.add(brake.getOutPut());
+                }
+
+                if (speedSection.equals("적당함(속도)") && distanceSection.equals("멀다(거리)")) {
+                    inputResult.add(minResult);
+                    brakeSection = "안 밟음";
+                    Brake brake = new Brake(minResult, brakeSection);
+
+                    result.add(brake.getOutPut());
+                }
+
+                if (speedSection.equals("빠름(속도)") && distanceSection.equals("가까움(거리)")) {
+                    inputResult.add(minResult);
+                    brakeSection = "살살";
+                    Brake brake = new Brake(minResult, brakeSection);
+
+                    result.add(brake.getOutPut());
+                }
+
+                if (speedSection.equals("빠름(속도)") && distanceSection.equals("적당함(거리)")) {
+                    inputResult.add(minResult);
+                    brakeSection = "안 밟음";
+                    Brake brake = new Brake(minResult, brakeSection);
+
+                    result.add(brake.getOutPut());
+                }
+
+                if (speedSection.equals("빠름(속도)") || distanceSection.equals("멀다(거리)")) {
+                    inputResult.add(minResult);
+                    brakeSection = "안 밟음";
+                    Brake brake = new Brake(minResult, brakeSection);
+
+                    result.add(brake.getOutPut());
+                }
+            }
         }
 
-        if (speed >= -60 && speed < 0) {
-            float value = (-1 * speed) / 60;
-
-            result += String.format("%.1f 느림(속도)\n", value);
-        }
-
-        if (speed >= -60 && speed < -20) {
-            float value = 0.025f * speed + 1.5f;
-
-            result += String.format("%.1f 적당함(속도)\n", value);
-        }
-
-        if (speed >= -20 && speed < 20) {
-            result += (1 + " 적당함(속도)\n");
-        }
-
-        if (speed >= 20 && speed < 60) {
-            float value = -0.025f * speed + 1.5f;
-
-            result += String.format("%.1f 적당함(속도)\n", value);
-        }
-
-        if (speed >= 0 && speed < 60) {
-            float value = speed / 60;
-
-            result += String.format("%.1f 빠름(속도)\n", value);
-        }
-
-        if (speed >= 60) {
-            result += 1 + " 빠름(속도)\n";
-        }
-
-        return result;
+        System.out.println(calculate(result, inputResult));
     }
 
-    public static String distanceSection(float distance) {
-        String result = "";
-
-        if (distance < 20) {
-            result += 1 + " 가까움(거리)\n";
+    public static String calculate(ArrayList<String> brake, ArrayList<Float> input) {
+        float x = 0;
+        float y = 0;
+        for (int i = 0; i < brake.size(); i++) {
+            x += input.get(i);
+            y += input.get(i) * Float.parseFloat(brake.get(i).split(" ")[0]);
         }
 
-        if (distance >= 20 && distance < 40) {
-            float value = -distance / 20 + 2;
-
-            result += String.format("%.1f 가까움(거리)\n", value);
-        }
-
-        if (distance >= 35 && distance < 45) {
-            float value = distance / 15 - 2;
-
-            result += String.format("%.1f 적당함(거리)\n", value);
-        }
-
-        if (distance >= 45 && distance < 55) {
-            result += 1 + " 적당함(거리)\n";
-        }
-
-        if (distance >= 55 && distance < 70) {
-            float value = -distance / 15 + (14f/3f);
-
-            result += String.format("%.1f 적당함(거리)\n", value);
-        }
-
-        if (distance >= 60 && distance < 80) {
-            float value = distance / 20 - 3;
-
-            result += String.format("%.1f 멀다(거리)\n", value);
-        }
-
-        if (distance >= 80) {
-            result += 1 + " 멀다(거리)\n";
-        }
-
-        return result;
-    }
-
-    public static String brakeSection(float brake) {
-        String result = "";
-
-        if (brake >= 0 && brake < 0.2f) {
-            float value = -3.5f * brake + 1;
-
-            result += String.format("%.1f 안밟는다(브레이크)\n", value);
-        }
-
-        if (brake >= 0.2f && brake < 0.25f) {
-            result += 0.3f + " 안밟는다(브레이크)\n";
-        }
-
-        if (brake >= 0.25f && brake < 0.3f) {
-            result += 0.3f + " 살살밟는다(브레이크)\n";
-        }
-
-        if (brake >= 0.3f && brake < 0.5f) {
-            float value = 3.5f * brake - 0.75f;
-
-            result += String.format("%.1f 살살밟는다(브레이크)\n", value);
-        }
-
-        if (brake >= 0.5f && brake < 0.7f) {
-            float value = -3.5f * brake + 2.75f;
-
-            result += String.format("%.1f 세게밟는다(브레이크)\n", value);
-        }
-
-        if (brake >= 0.7f && brake < 0.75f) {
-            result += 0.3f + " 세게밟는다(브레이크)";
-        }
-
-        if (brake >= 0.75f && brake < 0.8f) {
-            result += 0.3f + " 빡밟는다(브레이크)";
-        }
-
-        if (brake >= 0.8f && brake <=1) {
-            float value = 3.5f * brake - 2.5f;
-
-            result += String.format("%.1f 빡밟는다(브레이크)\n", value);
-        }
-
-        return result;
+        return String.format("%.1f 브레이크", y/x);
     }
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -159,11 +133,10 @@ public class BrakeFuzzy {
                 continue;
             }
 
-            String speedResult = speedSection(speed);
-            String distanceResult = distanceSection(distance);
+            Speed speedObject = new Speed(speed);
+            Distance distanceObject = new Distance(distance);
 
-            System.out.println(speedResult);
-            System.out.println(distanceResult);
+            rule(speedObject.getOutPut(), distanceObject.getOutPut());
         }
     }
 }
